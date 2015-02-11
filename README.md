@@ -5,6 +5,8 @@ This repo is a preconfigured fork of the <a href="https://github.com/coreos/core
 * Enable automatic etcd cluster provisioning.
 * Set CoreOS version to 'alpha'.
 * Set number of nodes to default to 2.
+* Preload the Calico docker images on the CoreOS hosts.
+* Download the calicoctl executable to the CoreOS hosts.
 
 ## Streamlined setup
 
