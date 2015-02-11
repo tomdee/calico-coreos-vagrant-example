@@ -1,7 +1,10 @@
-# CoreOS Vagrant
+# Calico demo using CoreOS Vagrant
 
-This repo provides a template Vagrantfile to create a CoreOS virtual machine using the VirtualBox software hypervisor.
-After setup is complete you will have a single CoreOS virtual machine running on your local machine.
+This repo is a preconfigured fork of the sample CoreOS Vagrant configuration for the Project Calico netoworking demonstration.  The modifications are as follows:
+
+* Enable automatic etcd cluster provisioning.
+* Set CoreOS version to 'alpha'.
+* Set number of nodes to default to 2.
 
 ## Streamlined setup
 
@@ -13,8 +16,8 @@ After setup is complete you will have a single CoreOS virtual machine running on
 2) Clone this project and get it running!
 
 ```
-git clone https://github.com/coreos/coreos-vagrant/
-cd coreos-vagrant
+git clone https://github.com/Metaswitch/calico-coreos-vagrant-example.git
+cd calico-coreos-vagrant-example
 ```
 
 3) Startup and SSH
@@ -28,7 +31,8 @@ The VirtualBox provider is the default Vagrant provider. Use this if you are uns
 
 ```
 vagrant up
-vagrant ssh
+vagrant ssh core-01
+vagrant ssh core-02  # In separate shell.
 ```
 
 **VMware Provider**
@@ -39,18 +43,20 @@ If you use this provider follow these instructions.
 VMware Fusion:
 ```
 vagrant up --provider vmware_fusion
-vagrant ssh
+vagrant ssh core-01
+vagrant ssh core-02  # In separate shell.
 ```
 
 VMware Workstation:
 ```
 vagrant up --provider vmware_workstation
-vagrant ssh
+vagrant ssh core-01
+vagrant ssh core-02  # In separate shell.
 ```
 
 ``vagrant up`` triggers vagrant to download the CoreOS image (if necessary) and (re)launch the instance
 
-``vagrant ssh`` connects you to the virtual machine.
+``vagrant ssh <node name>`` connects you to the virtual machine.
 Configuration is stored in the directory so you can always return to this machine by executing vagrant ssh from the directory where the Vagrantfile was located.
 
 4) Get started [using CoreOS][using-coreos]
@@ -76,7 +82,7 @@ After a 'vagrant reload' you will be prompted for your local machine password.
 The Vagrantfile will provision your CoreOS VM(s) with [coreos-cloudinit][coreos-cloudinit] if a `user-data` file is found in the project directory.
 coreos-cloudinit simplifies the provisioning process through the use of a script or cloud-config document.
 
-To get started, copy `user-data.sample` to `user-data` and make any necessary modifications.
+Edit `user-data` and make any necessary modifications.
 Check out the [coreos-cloudinit documentation][coreos-cloudinit] to learn about the available features.
 
 [coreos-cloudinit]: https://github.com/coreos/coreos-cloudinit
@@ -84,7 +90,7 @@ Check out the [coreos-cloudinit documentation][coreos-cloudinit] to learn about 
 #### Configuration
 
 The Vagrantfile will parse a `config.rb` file containing a set of options used to configure your CoreOS cluster.
-See `config.rb.sample` for more information.
+See `config.rb` for more information.
 
 ## Cluster Setup
 
