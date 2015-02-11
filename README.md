@@ -1,6 +1,6 @@
 # Calico demo using CoreOS Vagrant
 
-This repo is a preconfigured fork of the sample CoreOS Vagrant configuration for the Project Calico netoworking demonstration.  The modifications are as follows:
+This repo is a preconfigured fork of the <a href="https://github.com/coreos/coreos-vagrant">sample CoreOS Vagrant configuration</a> for the <a href="https://github.com/Metaswitch/calico">Project Calico</a> <a href="https://github.com/Metaswitch/calico-docker">docker networking demo</a>.  The modifications are as follows:
 
 * Enable automatic etcd cluster provisioning.
 * Set CoreOS version to 'alpha'.
@@ -59,11 +59,12 @@ vagrant ssh core-02  # In separate shell.
 ``vagrant ssh <node name>`` connects you to the virtual machine.
 Configuration is stored in the directory so you can always return to this machine by executing vagrant ssh from the directory where the Vagrantfile was located.
 
-4) Get started [using CoreOS][using-coreos]
+4) Get started [using Calico networking][using-calico] and [CoreOS][using-coreos]
 
 [virtualbox]: https://www.virtualbox.org/
 [vagrant]: https://www.vagrantup.com/downloads.html
 [using-coreos]: http://coreos.com/docs/using-coreos/
+[using-calico]: https://github.com/Metaswitch/calico-docker/blob/master/docs/GettingStarted.md
 
 #### Shared Folder Setup
 
