@@ -7,7 +7,7 @@ coreos:
     addr: $public_ipv4:4001
     peer-addr: $public_ipv4:7001
   update:
-    reboot-strategy: off
+    reboot-strategy: 'off'
   fleet:
     public-ip: $public_ipv4
   units:
