@@ -126,6 +126,14 @@ Vagrant.configure("2") do |config|
         config.vm.provision :shell, :inline => "mv /tmp/vagrantfile-user-data /var/lib/coreos-vagrant/", :privileged => true
       end
 
+      # Metaswitch modification: download calico and preload the docker images.
+      config.vm.provision :shell, :inline => "wget -q https://github.com/Metaswitch/calico-docker/releases/download/v0.0.4/calicoctl"
+      config.vm.provision :shell, :inline => "chmod +x calicoctl"
+      if $i == 1
+        # Save some time by only pulling the master image on the master node.
+        config.vm.provision :shell, :inline => "docker pull calico/master"
+      end
+      config.vm.provision :shell, :inline => "docker pull calico/node"
     end
   end
 end
