@@ -6,6 +6,8 @@ coreos:
     discovery: https://discovery.etcd.io/66fefbd0d6859ccf208ccbe62b28b4a2
     addr: $public_ipv4:4001
     peer-addr: $public_ipv4:7001
+  update:
+    reboot-strategy: false
   fleet:
     public-ip: $public_ipv4
   units:
