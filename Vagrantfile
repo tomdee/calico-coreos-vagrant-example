@@ -131,7 +131,6 @@ Vagrant.configure("2") do |config|
       config.vm.provision :shell, :inline => "wget -q https://github.com/Metaswitch/calico-docker/releases/download/#{CALICO_DOCKER_VER}/calicoctl"
       config.vm.provision :shell, :inline => "chmod +x calicoctl"
       config.vm.provision "docker", images: ["calico/node:#{CALICO_DOCKER_VER}", "busybox:latest"]
-      end
     end
   end
 end
