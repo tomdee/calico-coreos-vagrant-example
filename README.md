@@ -68,6 +68,8 @@ Configuration is stored in the directory so you can always return to this machin
 [using-coreos]: http://coreos.com/docs/using-coreos/
 [using-calico]: https://github.com/Metaswitch/calico-docker/blob/master/docs/GettingStarted.md
 
+## Additional optional setup steps
+
 #### Shared Folder Setup
 
 There is optional shared folder setup.
