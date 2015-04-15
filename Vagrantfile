@@ -5,7 +5,7 @@ require 'fileutils'
 
 Vagrant.require_version ">= 1.6.0"
 
-CALICO_DOCKER_VER = "v0.3.1"
+CALICO_DOCKER_VER = "v0.3.2"
 CLOUD_CONFIG_PATH = File.join(File.dirname(__FILE__), "user-data")
 CONFIG = File.join(File.dirname(__FILE__), "config.rb")
 
