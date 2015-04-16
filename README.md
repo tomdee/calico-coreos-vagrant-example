@@ -14,13 +14,12 @@ This repo is a preconfigured fork of the <a href="https://github.com/coreos/core
 
 * [VirtualBox][virtualbox] 4.3.10 or greater.
 * [Vagrant][vagrant] 1.6 or greater.
+* [Git][git]
 
 2) Clone this project and get it running!
 
-```
-git clone https://github.com/Metaswitch/calico-coreos-vagrant-example.git
-cd calico-coreos-vagrant-example
-```
+    git clone https://github.com/Metaswitch/calico-coreos-vagrant-example.git
+    cd calico-coreos-vagrant-example
 
 3) Startup and SSH
 
@@ -31,11 +30,7 @@ Follow one of the following two options:
 
 The VirtualBox provider is the default Vagrant provider. Use this if you are unsure.
 
-```
-vagrant up
-vagrant ssh core-01
-vagrant ssh core-02  # In separate shell.
-```
+    vagrant up
 
 **VMware Provider**
 
@@ -43,30 +38,47 @@ The VMware provider is a commercial addon from Hashicorp that offers better stab
 If you use this provider follow these instructions.
 
 VMware Fusion:
-```
-vagrant up --provider vmware_fusion
-vagrant ssh core-01
-vagrant ssh core-02  # In separate shell.
-```
+
+    vagrant up --provider vmware_fusion
 
 VMware Workstation:
-```
-vagrant up --provider vmware_workstation
-vagrant ssh core-01
-vagrant ssh core-02  # In separate shell.
-```
 
-``vagrant up`` triggers vagrant to download the CoreOS image (if necessary) and (re)launch the instance
+    vagrant up --provider vmware_workstation
 
-``vagrant ssh <node name>`` connects you to the virtual machine.
-Configuration is stored in the directory so you can always return to this machine by executing vagrant ssh from the directory where the Vagrantfile was located.
+To connect to your servers
+* Linux/Mac OS X
+    * run `vagrant ssh <hostname>`
+* Windows
+    * Follow instructions from https://github.com/nickryand/vagrant-multi-putty
+    * run `vagrant putty <hostname>`
 
-4) Get started [using Calico networking][using-calico] and [CoreOS][using-coreos]
+4) Verify environment
+
+You should now have two CoreOS servers, each running etcd in a cluster. The servers are named core-01 and core-02.  By default these have IP addresses 172.17.8.101 and 172.17.8.102.
+
+At this point, it's worth checking that your servers can ping each other.
+
+From core-01
+
+    ping 172.17.8.102
+  
+From core-02
+
+    ping 172.17.8.101
+
+If you see ping failures, the likely culprit is a problem with then VirtualBox network between the VMs.  Rebooting the host may help.  Remember to shut down the VMs first with `vagrant halt` before you reboot.
+
+You should also verify each host can access etcd.  The following will return an error if etcd is not available.
+
+    etcdctl ls /
+
+5) Get started [using Calico networking][using-calico] and [CoreOS][using-coreos]
 
 [virtualbox]: https://www.virtualbox.org/
 [vagrant]: https://www.vagrantup.com/downloads.html
 [using-coreos]: http://coreos.com/docs/using-coreos/
 [using-calico]: https://github.com/Metaswitch/calico-docker/blob/master/docs/GettingStarted.md
+[git]: http://git-scm.com/
 
 ## Additional optional setup steps
 
@@ -75,17 +87,14 @@ Configuration is stored in the directory so you can always return to this machin
 There is optional shared folder setup.
 You can try it out by adding a section to your Vagrantfile like this.
 
-```
-config.vm.network "private_network", ip: "172.17.8.150"
-config.vm.synced_folder ".", "/home/core/share", id: "core", :nfs => true,  :mount_options   => ['nolock,vers=3,udp']
-```
+    config.vm.network "private_network", ip: "172.17.8.150"
+    config.vm.synced_folder ".", "/home/core/share", id: "core", :nfs => true,  :mount_options   => ['nolock,vers=3,udp']
 
-After a 'vagrant reload' you will be prompted for your local machine password.
+After a `vagrant reload` you will be prompted for your local machine password.
 
 #### Provisioning with user-data
 
-The Vagrantfile will provision your CoreOS VM(s) with [coreos-cloudinit][coreos-cloudinit] if a `user-data` file is found in the project directory.
-coreos-cloudinit simplifies the provisioning process through the use of a script or cloud-config document.
+The Vagrantfile will provision your CoreOS VM(s) with [coreos-cloudinit][coreos-cloudinit] if a `user-data` file is found in the project directory.  coreos-cloudinit simplifies the provisioning process through the use of a script or `cloud-config` document.
 
 Edit `user-data` and make any necessary modifications.
 Check out the [coreos-cloudinit documentation][coreos-cloudinit] to learn about the available features.
@@ -108,17 +117,13 @@ CoreOS is a rolling release distribution and versions that are out of date will 
 If you want to start from the most up to date version you will need to make sure that you have the latest box file of CoreOS.
 Simply remove the old box file and vagrant will download the latest one the next time you `vagrant up`.
 
-```
-vagrant box remove coreos --provider vmware_fusion
-vagrant box remove coreos --provider vmware_workstation
-vagrant box remove coreos --provider virtualbox
-```
+    vagrant box remove coreos --provider vmware_fusion
+    vagrant box remove coreos --provider vmware_workstation
+    vagrant box remove coreos --provider virtualbox
 
 ## Docker Forwarding
 
-By setting the `$expose_docker_tcp` configuration value you can forward a local TCP port to docker on
-each CoreOS machine that you launch. The first machine will be available on the port that you specify
-and each additional machine will increment the port by 1.
+By setting the `$expose_docker_tcp` configuration value you can forward a local TCP port to docker on each CoreOS machine that you launch. The first machine will be available on the port that you specify and each additional machine will increment the port by 1.
 
 Follow the [Enable Remote API instructions][coreos-enabling-port-forwarding] to get the CoreOS VM setup to work with port forwarding.
 
