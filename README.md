@@ -66,7 +66,7 @@ From core-02
 
     ping 172.17.8.101
 
-If you see ping failures, the likely culprit is a problem with the VirtualBox network between the VMs.  You should check that each host is connected to the same virtual network adapter in Virtual Box and rebooting the host may also help.  Remember to shut down the VMs first with `vagrant halt` before you reboot.
+If you see ping failures, the likely culprit is a problem with the VirtualBox network between the VMs.  You should check that each host is connected to the same virtual network adapter in VirtualBox and rebooting the host may also help.  Remember to shut down the VMs with `vagrant halt` before you reboot.
 
 You should also verify each host can access etcd.  The following will return an error if etcd is not available.
 
