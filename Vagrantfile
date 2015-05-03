@@ -130,6 +130,8 @@ Vagrant.configure("2") do |config|
       # Metaswitch modification: download calico and preload the docker images.
       config.vm.provision :shell, :inline => "wget -q https://github.com/Metaswitch/calico-docker/releases/download/#{CALICO_DOCKER_VER}/calicoctl"
       config.vm.provision :shell, :inline => "chmod +x calicoctl"
+      config.vm.provision :shell, :inline => "sudo modprobe ip6_tables"
+      config.vm.provision :shell, :inline => "sudo modprobe xt_set"
       config.vm.provision "docker", images: ["calico/node:#{CALICO_DOCKER_VER}", "busybox:latest"]
     end
   end
