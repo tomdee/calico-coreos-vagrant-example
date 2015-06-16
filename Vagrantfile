@@ -5,7 +5,7 @@ require 'fileutils'
 
 Vagrant.require_version ">= 1.6.0"
 
-CALICO_DOCKER_VER = "v0.4.4"
+CALICO_DOCKER_VER = "v0.4.5"
 CLOUD_CONFIG_PATH = File.join(File.dirname(__FILE__), "user-data")
 CONFIG = File.join(File.dirname(__FILE__), "config.rb")
 
@@ -130,8 +130,7 @@ Vagrant.configure("2") do |config|
       # Metaswitch modification: download calico and preload the docker images.
       config.vm.provision :shell, :inline => "wget -q https://github.com/Metaswitch/calico-docker/releases/download/#{CALICO_DOCKER_VER}/calicoctl"
       config.vm.provision :shell, :inline => "chmod +x calicoctl"
-      config.vm.provision :shell, :inline => "sudo modprobe ip6_tables"
-      config.vm.provision :shell, :inline => "sudo modprobe xt_set"
+      config.vm.provision :shell, :inline => "sudo ./calicoctl checksystem --fix"
       config.vm.provision "docker", images: ["calico/node:#{CALICO_DOCKER_VER}", "busybox:latest"]
     end
   end
