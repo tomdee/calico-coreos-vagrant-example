@@ -1,6 +1,8 @@
-# Calico demo using CoreOS Vagrant
+# Set up Calico on CoreOS using Vagrant
 
-This repo is a preconfigured fork of the <a href="https://github.com/coreos/coreos-vagrant">sample CoreOS Vagrant configuration</a> for the <a href="https://github.com/Metaswitch/calico">Project Calico</a> <a href="https://github.com/Metaswitch/calico-docker">docker networking demo</a>.  The modifications are as follows:
+You can quickly set up a CoreOS cluster ready to network Docker containers with <a href="https://github.com/Metaswitch/calico-docker">Calico Docker networking</a> using the Vagrant files in this repo.
+
+This repo is a preconfigured fork of the <a href="https://github.com/coreos/coreos-vagrant">sample CoreOS Vagrant configuration</a> with the following changes:
 
 * Enable automatic etcd cluster provisioning.
 * Set CoreOS version to 'alpha'.
@@ -68,11 +70,14 @@ From core-02
 
 If you see ping failures, the likely culprit is a problem with the VirtualBox network between the VMs.  You should check that each host is connected to the same virtual network adapter in VirtualBox and rebooting the host may also help.  Remember to shut down the VMs with `vagrant halt` before you reboot.
 
-You should also verify each host can access etcd.  The following will return an error if etcd is not available.
+You should also verify that etcd is running and showing both nodes as healthy.
 
-    etcdctl ls /
+    etcdctl cluster-health
 
-5) Get started [using Calico networking][using-calico] and [CoreOS][using-coreos]
+## Try out Calico networking
+Now you have a basic two node CoreOS cluster setup and you are ready to try Calico neworking.
+
+Follow the step by step [getting started instructions][using-calico] in the main calico-docker repo.
 
 [virtualbox]: https://www.virtualbox.org/
 [vagrant]: https://www.vagrantup.com/downloads.html
