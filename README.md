@@ -1,6 +1,6 @@
 # Set up Calico on CoreOS using Vagrant
 
->*Note that Calico's use of powerstrip support (as seen in this demo) is being replaced by Docker's new [libnetwork network driver support](https://github.com/docker/libnetwork) available in the Docker [experimental channel](https://github.com/docker/docker/tree/master/experimental) alongside the Docker 1.7 release.  You can find the Calico libnetwork demo [here](https://github.com/Metaswitch/calico-ubuntu-vagrant)*
+>*Note that Calico's use of powerstrip support (as seen in this demo) is being replaced by Docker's new [libnetwork network driver support](https://github.com/docker/libnetwork) available in the Docker [experimental channel](https://github.com/docker/docker/tree/master/experimental) alongside the Docker 1.7 release.  You can find the latest Calico libnetwork demo on the main [Getting Started page](https://github.com/Metaswitch/calico-docker/blob/master/docs/GettingStarted.md).*
 
 You can quickly set up a CoreOS cluster ready to network Docker containers with <a href="https://github.com/Metaswitch/calico-docker">Calico Docker networking</a> using the Vagrant files in this repo.
 
