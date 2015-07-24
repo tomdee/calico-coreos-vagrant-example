@@ -1,16 +1,6 @@
 # Set up Calico on CoreOS using Vagrant
 
->*Note that Calico's use of powerstrip support (as seen in this demo) is being replaced by Docker's new [libnetwork network driver support](https://github.com/docker/libnetwork) available in the Docker [experimental channel](https://github.com/docker/docker/tree/master/experimental) alongside the Docker 1.7 release.  You can find the latest Calico libnetwork demo on the main [Getting Started page](https://github.com/Metaswitch/calico-docker/blob/master/docs/GettingStarted.md).*
-
 You can quickly set up a CoreOS cluster ready to network Docker containers with <a href="https://github.com/Metaswitch/calico-docker">Calico Docker networking</a> using the Vagrant files in this repo.
-
-This repo is a preconfigured fork of the <a href="https://github.com/coreos/coreos-vagrant">sample CoreOS Vagrant configuration</a> with the following changes:
-
-* Enable automatic etcd cluster provisioning.
-* Set CoreOS version to 'alpha'.
-* Set number of nodes to default to 2.
-* Preload the Calico docker images on the CoreOS hosts.
-* Download the calicoctl executable to the CoreOS hosts.
 
 ## Streamlined setup
 
@@ -27,27 +17,8 @@ This repo is a preconfigured fork of the <a href="https://github.com/coreos/core
 
 3) Startup and SSH
 
-There are two "providers" for Vagrant with slightly different instructions.
-Follow one of the following two options:
-
-**VirtualBox Provider**
-
-The VirtualBox provider is the default Vagrant provider. Use this if you are unsure.
-
+Run
     vagrant up
-
-**VMware Provider**
-
-The VMware provider is a commercial addon from Hashicorp that offers better stability and speed.
-If you use this provider follow these instructions.
-
-VMware Fusion:
-
-    vagrant up --provider vmware_fusion
-
-VMware Workstation:
-
-    vagrant up --provider vmware_workstation
 
 To connect to your servers
 * Linux/Mac OS X
@@ -58,15 +29,15 @@ To connect to your servers
 
 4) Verify environment
 
-You should now have two CoreOS servers, each running etcd in a cluster. The servers are named core-01 and core-02.  By default these have IP addresses 172.17.8.101 and 172.17.8.102.
+You should now have two CoreOS servers, each running etcd in a cluster. The servers are named calico-01 and calico-02 and IP addresses 172.17.8.101 and 172.17.8.102.
 
 At this point, it's worth checking that your servers can ping each other.
 
-From core-01
+From calico-01
 
     ping 172.17.8.102
 
-From core-02
+From calico-02
 
     ping 172.17.8.101
 
@@ -86,56 +57,3 @@ Follow the step by step [getting started instructions][using-calico] in the main
 [using-coreos]: http://coreos.com/docs/using-coreos/
 [using-calico]: https://github.com/Metaswitch/calico-docker/blob/powerstrip-archive/docs/GettingStarted.md
 [git]: http://git-scm.com/
-
-## Additional optional setup steps
-
-#### Shared Folder Setup
-
-There is optional shared folder setup.
-You can try it out by adding a section to your Vagrantfile like this.
-
-    config.vm.network "private_network", ip: "172.17.8.150"
-    config.vm.synced_folder ".", "/home/core/share", id: "core", :nfs => true,  :mount_options   => ['nolock,vers=3,udp']
-
-After a `vagrant reload` you will be prompted for your local machine password.
-
-#### Provisioning with user-data
-
-The Vagrantfile will provision your CoreOS VM(s) with [coreos-cloudinit][coreos-cloudinit] if a `user-data` file is found in the project directory.  coreos-cloudinit simplifies the provisioning process through the use of a script or `cloud-config` document.
-
-Edit `user-data` and make any necessary modifications.
-Check out the [coreos-cloudinit documentation][coreos-cloudinit] to learn about the available features.
-
-[coreos-cloudinit]: https://github.com/coreos/coreos-cloudinit
-
-#### Configuration
-
-The Vagrantfile will parse a `config.rb` file containing a set of options used to configure your CoreOS cluster.
-See `config.rb` for more information.
-
-## Cluster Setup
-
-Launching a CoreOS cluster on Vagrant is as simple as configuring `$num_instances` in a `config.rb` file to 3 (or more!) and running `vagrant up`.
-Make sure you provide a fresh discovery URL in your `user-data` if you wish to bootstrap etcd in your cluster.
-
-## New Box Versions
-
-CoreOS is a rolling release distribution and versions that are out of date will automatically update.
-If you want to start from the most up to date version you will need to make sure that you have the latest box file of CoreOS.
-Simply remove the old box file and vagrant will download the latest one the next time you `vagrant up`.
-
-    vagrant box remove coreos --provider vmware_fusion
-    vagrant box remove coreos --provider vmware_workstation
-    vagrant box remove coreos --provider virtualbox
-
-## Docker Forwarding
-
-By setting the `$expose_docker_tcp` configuration value you can forward a local TCP port to docker on each CoreOS machine that you launch. The first machine will be available on the port that you specify and each additional machine will increment the port by 1.
-
-Follow the [Enable Remote API instructions][coreos-enabling-port-forwarding] to get the CoreOS VM setup to work with port forwarding.
-
-[coreos-enabling-port-forwarding]: https://coreos.com/docs/launching-containers/building/customizing-docker/#enable-the-remote-api-on-a-new-socket
-
-Then you can then use the `docker` command from your local shell by setting `DOCKER_HOST`:
-
-    export DOCKER_HOST=tcp://localhost:2375
