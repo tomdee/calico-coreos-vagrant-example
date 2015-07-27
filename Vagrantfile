@@ -1,10 +1,6 @@
 # -*- mode: ruby -*-
 # # vi: set ft=ruby :
 
-require 'fileutils'
-
-Vagrant.require_version ">= 1.6.0"
-
 # The version of calico to install
 calico_docker_ver = "v0.5.2"
 
@@ -19,23 +15,6 @@ primary_ip = "172.17.8.101"
 
 # Official CoreOS channel from which updates should be downloaded
 update_channel='alpha'
-
-cloud_config_path = File.join(File.dirname(__FILE__), "user-data")
-$new_discovery_url='https://discovery.etcd.io/new'
-
-# Update the etcd discovery URL in the user-date file.
-if ARGV[0].eql?('up')
-  require 'open-uri'
-  require 'yaml'
-
-  token = open($new_discovery_url).read
-
-  data = YAML.load(IO.readlines('user-data')[1..-1].join)
-  data['coreos']['etcd2']['discovery'] = token
-
-  yaml = YAML.dump(data)
-  File.open('user-data', 'w') { |file| file.write("#cloud-config\n\n#{yaml}") }
-end
 
 Vagrant.configure("2") do |config|
   # always use Vagrants insecure key
@@ -66,10 +45,19 @@ Vagrant.configure("2") do |config|
       ip = "172.17.8.#{i+100}"
       host.vm.network :private_network, ip: ip
 
-      config.vm.provision "docker", images: ["calico/node:#{calico_docker_ver}", "busybox:latest"]
+      #config.vm.provision "docker", images: ["calico/node:#{calico_docker_ver}", "busybox:latest"]
 
-      config.vm.provision :file, :source => "#{cloud_config_path}", :destination => "/tmp/vagrantfile-user-data"
-      config.vm.provision :shell, :inline => "mv /tmp/vagrantfile-user-data /var/lib/coreos-vagrant/", :privileged => true
+      # Use a different cloud-init on the first server.
+      if i == 1
+        config.vm.provision :file, :source => "user-data-first", :destination => "/tmp/vagrantfile-user-data"
+        config.vm.provision :shell, :inline => "mv /tmp/vagrantfile-user-data /var/lib/coreos-vagrant/", :privileged => true
+      else
+        config.vm.provision :file, :source => "user-data-others", :destination => "/tmp/vagrantfile-user-data"
+        config.vm.provision :shell, :inline => "mv /tmp/vagrantfile-user-data /var/lib/coreos-vagrant/", :privileged => true
+      end
+
+      config.vm.post_up_message = "Vagrant has finished but cloud-init might still be executing.
+      Check the progress using systemctl status -f"
     end
   end
 end

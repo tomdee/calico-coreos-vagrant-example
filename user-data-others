@@ -1,18 +1,14 @@
 #cloud-config
 
----
 coreos:
   update:
     reboot-strategy: 'off'
-  etcd2:
-    discovery: https://discovery.etcd.io/8efc6f051d7924cd43f6b2de952e3f66
-    advertise-client-urls: http://$private_ipv4:2379,http://$private_ipv4:4001
-    initial-advertise-peer-urls: http://$private_ipv4:2380
-    listen-client-urls: http://0.0.0.0:2379,http://0.0.0.0:4001
-    listen-peer-urls: http://$private_ipv4:2380
   fleet:
     public-ip: $public_ipv4
+    etcd_servers: http://172.17.8.101:4001
   units:
+  - name: fleet.service
+    command: start
   - name: download-reqs.service
     command: start
     content: |-
@@ -25,30 +21,26 @@ coreos:
       RemainAfterExit=yes
       Type=oneshot
       ExecStart=/home/core/add_path.sh
-      ExecStart=/home/core/get_consul.sh
-      ExecStart=/home/core/get_experimental_docker.sh
       ExecStart=/home/core/get_calicoctl.sh
-  - name: consul.service
+  - name: download-experimental.service
     command: start
     content: |-
       [Unit]
-      Description=Consul Server
+      Description=Download and unpack the prereqs
       Wants=download-reqs.service
       After=download-reqs.service
 
       [Service]
-      ExecStart=/opt/bin/consul agent -server -bootstrap-expect 1 -data-dir /tmp/consul -client $public_ipv4
-      Restart=on-failure
-
-      [Install]
-      WantedBy=multi-user.target
+      RemainAfterExit=yes
+      Type=oneshot
+      ExecStart=/home/core/get_experimental_docker.sh
   - name: docker.service
     command: restart
     content: |-
       [Unit]
       Description=Docker Application Container Engine
-      After=docker.socket early-docker.target network.target consul.service
-      Requires=docker.socket early-docker.target
+      After=docker.socket early-docker.target network.target download-reqs.service
+      Requires=docker.socket early-docker.target download-reqs.service
 
       [Service]
       Environment=TMPDIR=/var/tmp
@@ -56,6 +48,9 @@ coreos:
       LimitNOFILE=1048576
       LimitNPROC=1048576
       ExecStart=/opt/bin/docker --kv-store=consul:172.17.8.101:8500 --daemon --host=fd:// $DOCKER_OPTS $DOCKER_OPT_BIP $DOCKER_OPT_MTU $DOCKER_OPT_IPMASQ
+      ExecStartPost=/opt/bin/calicoctl checksystem --fix
+      RestartSec=10
+      Restart=always
 
       [Install]
       WantedBy=multi-user.target
@@ -70,29 +65,20 @@ write_files:
     mkdir -p /opt/bin
     rm /home/core/.bashrc
     echo 'PATH=/opt/bin:$PATH' > /home/core/.bashrc
-- path: /home/core/get_consul.sh
-  permissions: 777
-  owner: root
-  content: |
-    #!/usr/bin/bash -e
-    cd /opt/bin
-    wget https://dl.bintray.com/mitchellh/consul/0.5.2_linux_amd64.zip -O consul.zip
-    unzip consul.zip
-    rm consul.zip
-    chmod +x consul
+    echo 'export ETCD_AUTHORITY="172.17.8.101:4001"' >> /home/core/.bashrc
+    echo 'Defaults env_keep +="ETCD_AUTHORITY"' >>/etc/sudoers.d/etcd
 - path: /home/core/get_experimental_docker.sh
   permissions: 777
   owner: root
   content: |
     #!/usr/bin/bash -e
     cd /opt/bin
-    wget https://github.com/Metaswitch/calico-docker/releases/download/v0.5.2/docker
+    wget https://github.com/Metaswitch/calico-docker/releases/download/v0.5.3/docker
     chmod +x ./docker
 - path: /home/core/get_calicoctl.sh
   permissions: 777
   owner: root
   content: |
     #!/usr/bin/bash -e
-    wget -O /opt/bin/calicoctl https://github.com/Metaswitch/calico-docker/releases/download/v0.5.2/calicoctl
+    wget -O /opt/bin/calicoctl https://github.com/Metaswitch/calico-docker/releases/download/v0.5.3/calicoctl
     chmod +x /opt/bin/calicoctl
-    /opt/bin/calicoctl checksystem --fix
